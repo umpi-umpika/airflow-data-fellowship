@@ -2,8 +2,8 @@ from posix import wait
 
 from airflow.providers.standard.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.sdk import dag, task
-from dag_orchestrate_1 import dag_orchestrate_1
-from dag_orchestrate_2 import dag_orchestrate_2
+from poc.dag_orchestrate_1 import dag_orchestrate_1
+from poc.dag_orchestrate_2 import dag_orchestrate_2
 
 ### this code is show it not work it need to use TriggerDagRunOperator to trigger the child DAGs instead of calling the DAG functions directly
 # @dag(

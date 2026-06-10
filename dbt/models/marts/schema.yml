@@ -1,0 +1,15 @@
+version: 2
+
+models:
+  - name: mart_user_activity
+    description: "User activity summary aggregated from events"
+    columns:
+      - name: user_id
+        description: "Unique user identifier"
+        tests:
+          - unique
+          - not_null
+      - name: total_events
+        description: "Total number of events for this user"
+        tests:
+          - not_null

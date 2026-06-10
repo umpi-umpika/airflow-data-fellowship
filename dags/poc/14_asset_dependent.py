@@ -2,7 +2,7 @@ import os
 
 import pendulum
 from airflow.sdk import asset, dag, task
-from asset_13 import fetch_data
+from poc.asset_13 import fetch_data
 
 
 @asset(
