@@ -5,7 +5,7 @@ Module 2, Phase 5: Advanced Interactions
 ตั้ง Deadline ให้ Task: ถ้ารันเกินเวลาที่กำหนด → สั่ง Fail
 + on_failure_callback ส่งแจ้งเตือนอัตโนมัติ
 """
-from airflow.decorators import dag, task
+from airflow.sdk import dag, task
 from datetime import datetime, timedelta
 import time
 
