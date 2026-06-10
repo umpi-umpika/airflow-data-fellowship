@@ -26,7 +26,7 @@ VBH_DOC = """
 
 
 @dag(
-    dag_id="vbh_complete_workflow",
+    dag_id="20_dag_documentation",
     start_date=datetime(2026, 6, 6),
     schedule="@daily",
     catchup=False,

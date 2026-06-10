@@ -6,7 +6,7 @@ import clickhouse_driver
 
 
 @dag(
-    dag_id='print_and_use_clickhouse_connection', 
+    dag_id='34_print_and_use_clickhouse_connection', 
     start_date=datetime(2026, 6, 6), 
     schedule=None, 
     catchup=False,

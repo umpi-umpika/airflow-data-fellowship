@@ -17,6 +17,7 @@ from pendulum import datetime
 
 
 @dag(
+    dag_id="13_incremental_load",
     schedule=CronDataIntervalTimetable(
         cron="@daily", timezone="Asia/Bangkok"
     ),  # Daily at midnight

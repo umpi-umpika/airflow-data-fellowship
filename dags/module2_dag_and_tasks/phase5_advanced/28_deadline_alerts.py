@@ -18,7 +18,7 @@ def alert_callback(context):
 
 
 @dag(
-    dag_id="deadline_alert_demo",
+    dag_id="28_deadline_alerts",
     start_date=datetime(2026, 6, 6),
     schedule="@daily",
     catchup=False,

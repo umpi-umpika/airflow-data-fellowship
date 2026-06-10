@@ -14,7 +14,7 @@ from airflow.providers.standard.operators.empty import EmptyOperator
 
 
 with DAG(
-    dag_id="task_group_demo",
+    dag_id="18_task_groups_demo",
     start_date=datetime.datetime(2026, 6, 1),
     schedule="@daily",
     catchup=False,

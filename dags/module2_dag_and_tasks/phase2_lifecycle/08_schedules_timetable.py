@@ -16,7 +16,7 @@ from pendulum import datetime
 
 
 @dag(
-    dag_id="timetable_timezone_dag",
+    dag_id="08_schedules_timetable",
     # Use Timetable to specify Cron and set Timezone to Bangkok
     schedule=CronDataIntervalTimetable(cron="0 12 * * *", timezone="Asia/Bangkok"),
     start_date=datetime(2026, 5, 1, tz="Asia/Bangkok"),

@@ -11,7 +11,7 @@ customer_table = Asset("file://db/customers")
 # ---------------------------------------------------------
 # DAG นี้ไม่มีเวลา (Cron) แต่จะรันทันทีที่ DAG 1 ทำ customer_table เสร็จ
 @dag(
-    dag_id='make_report_dag',
+    dag_id='37_make_report_dag',
     start_date=datetime(2026, 6, 6),
     schedule=[customer_table],
     catchup=False,

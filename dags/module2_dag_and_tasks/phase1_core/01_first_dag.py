@@ -16,7 +16,7 @@ from airflow.sdk import DAG, dag
 # Method 1: with statement (context manager)
 # ──────────────────────────────────────────────
 with DAG(
-    dag_id="first_dag_with_statement",
+    dag_id="01_first_dag",
     start_date=datetime.datetime(2021, 1, 1),
     schedule="@daily",
     catchup=False,
@@ -28,7 +28,7 @@ with DAG(
 # Method 2: Standard constructor
 # ──────────────────────────────────────────────
 my_dag = DAG(
-    dag_id="first_dag_constructor",
+    dag_id="01_first_dag_constructor",
     start_date=datetime.datetime(2021, 1, 1),
     schedule="@daily",
     catchup=False,
@@ -42,7 +42,7 @@ EmptyOperator(task_id="task", dag=my_dag)
 
 
 @dag(
-    dag_id="first_dag_decorator",
+    dag_id="01_first_dag_decorator",
     start_date=datetime.datetime(2021, 1, 1),
     schedule="@daily",
     catchup=False,

@@ -19,7 +19,7 @@ from datetime import datetime
 
 
 with DAG(
-    dag_id="advanced_sensor_config_demo",
+    dag_id="25_advanced_sensor_config_demo",
     start_date=datetime(2026, 6, 6),
     schedule=None,
     catchup=False,

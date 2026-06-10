@@ -4,7 +4,7 @@ from datetime import datetime
 
 
 @dag(
-    dag_id='airflow_secret_masking_demo',
+    dag_id='32_airflow_secret_masking_demo',
     start_date=datetime(2026, 6, 6),
     schedule=None,
     catchup=False,

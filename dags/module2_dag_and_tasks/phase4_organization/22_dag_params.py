@@ -16,7 +16,7 @@ DEFAULT_CONFIG = {
 
 
 @dag(
-    dag_id="dag_run_config_demo",
+    dag_id="22_dag_params",
     start_date=datetime(2026, 6, 6),
     schedule=None,
     catchup=False,

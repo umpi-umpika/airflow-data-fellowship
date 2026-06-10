@@ -19,7 +19,7 @@ from pendulum import datetime
 
 
 @dag(
-    dag_id="task_dependencies_demo",
+    dag_id="04_task_dependencies",
     start_date=datetime(2026, 1, 1, tz="Asia/Bangkok"),
     schedule="@daily",
     catchup=False,

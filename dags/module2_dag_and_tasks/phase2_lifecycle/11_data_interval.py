@@ -17,7 +17,7 @@ from pendulum import datetime
 
 
 @dag(
-    dag_id="data_interval_demo",
+    dag_id="11_data_interval",
     schedule=CronDataIntervalTimetable(cron="@daily", timezone="Asia/Bangkok"),
     start_date=datetime(2026, 6, 1, tz="Asia/Bangkok"),
     catchup=False,

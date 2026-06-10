@@ -12,7 +12,7 @@ from airflow.sdk import dag, task
 
 
 @dag(
-    dag_id="operator_dag",
+    dag_id="03_operators",
 )
 def operator_dag():
 

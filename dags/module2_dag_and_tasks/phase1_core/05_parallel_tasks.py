@@ -10,7 +10,7 @@ from airflow.sdk import dag, task
 
 
 @dag(
-    dag_id="parallel_dag",
+    dag_id="05_parallel_tasks",
 )
 def parallel_dag():
 

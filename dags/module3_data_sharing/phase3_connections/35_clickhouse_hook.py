@@ -5,7 +5,7 @@ from airflow_clickhouse_plugin.hooks.clickhouse import ClickHouseHook
 
 
 @dag(
-    dag_id='good_practice_clickhouse_fixed', 
+    dag_id='35_good_practice_clickhouse_fixed', 
     start_date=datetime(2026, 6, 6), 
     schedule=None, 
     catchup=False,

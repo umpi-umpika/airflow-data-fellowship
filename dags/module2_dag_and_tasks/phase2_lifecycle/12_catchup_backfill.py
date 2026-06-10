@@ -23,7 +23,7 @@ from datetime import datetime
 # This DAG will backfill all missed runs from start_date to today.
 # Suitable for: daily sales reports, historical data processing.
 with DAG(
-    dag_id="daily_sales_report_catchup",
+    dag_id="12_catchup_backfill",
     start_date=datetime(2026, 6, 1),  # Runs will be created from June 1 to present
     schedule="@daily",
     catchup=True,  # Important: backfill all past intervals

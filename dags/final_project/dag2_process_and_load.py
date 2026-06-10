@@ -58,7 +58,7 @@ CH_DATABASE = "default"
     uri="clickhouse://default/landing_sales",
     name="ch_landing_ready",
 )
-def ch_landing_ready(self):
+def ch_landing_ready():
     """Download CSV from MinIO, convert to Parquet, and load into ClickHouse."""
     import pyarrow as pa
     import pyarrow.parquet as pq

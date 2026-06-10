@@ -11,7 +11,7 @@ from airflow.providers.standard.operators.empty import EmptyOperator
 
 
 with DAG(
-    "loop_example",
+    dag_id="21_dynamic_dags",
     start_date=datetime(2026, 6, 1),
     schedule="@daily",
     catchup=False,

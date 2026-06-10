@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 @dag(
-    dag_id="jinja_templating_demo",
+    dag_id="23_jinja_templating",
     start_date=datetime(2026, 6, 6),
     schedule="@daily",
     catchup=False,

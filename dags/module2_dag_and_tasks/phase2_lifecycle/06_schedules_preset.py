@@ -13,7 +13,7 @@ from pendulum import datetime
 
 
 @dag(
-    dag_id="first_schedule_dag",
+    dag_id="06_schedules_preset",
     start_date=datetime(year=2026, month=5, day=1, tz="Asia/Bangkok"),
     schedule="@daily",
     is_paused_upon_creation=False,  # This will make the DAG active immediately after creation

@@ -11,7 +11,7 @@ from pendulum import datetime, duration
 
 
 @dag(
-    dag_id="delta_schedule_dag",
+    dag_id="09_schedules_delta",
     start_date=datetime(year=2026, month=5, day=1, tz="Asia/Bangkok"),
     schedule=DeltaTriggerTimetable(duration(days=3)),
     catchup=True,

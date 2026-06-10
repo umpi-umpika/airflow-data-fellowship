@@ -2,7 +2,7 @@ from airflow.decorators import dag, task
 from datetime import datetime
 
 
-@dag(start_date=datetime(2026, 6, 6), schedule=None, catchup=False)
+@dag(dag_id='30_xcoms_modern', start_date=datetime(2026, 6, 6), schedule=None, catchup=False)
 def taskflow_xcom_example():
 
 

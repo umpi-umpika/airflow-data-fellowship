@@ -11,7 +11,7 @@ from datetime import datetime
 
 
 @dag(
-    dag_id="setup_teardown_demo",
+    dag_id="17_setup_teardown_demo",
     start_date=datetime(2026, 6, 1),
     schedule="@daily",
     catchup=False,

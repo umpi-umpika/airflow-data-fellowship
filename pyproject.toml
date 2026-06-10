@@ -11,4 +11,5 @@ dependencies = [
     "apache-airflow-providers-amazon>=9.0.0",
     "astronomer-cosmos>=1.8.0",
     "dbt-clickhouse>=1.8.0",
+    "pyarrow>=24.0.0",
 ]

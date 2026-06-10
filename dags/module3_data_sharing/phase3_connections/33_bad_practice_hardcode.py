@@ -4,7 +4,7 @@ import clickhouse_driver  # ❌ ต้องนำเข้า Driver ของ 
 
 
 @dag(
-    dag_id='bad_practice_clickhouse_v1', 
+    dag_id='33_bad_practice_clickhouse_v1', 
     start_date=datetime(2026, 6, 6), 
     schedule=None, 
     catchup=False,

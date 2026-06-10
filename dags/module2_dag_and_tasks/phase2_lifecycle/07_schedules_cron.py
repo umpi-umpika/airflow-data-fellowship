@@ -13,7 +13,7 @@ from pendulum import datetime
 
 
 @dag(
-    dag_id="cron_schedule_dag",
+    dag_id="07_schedules_cron",
     start_date=datetime(year=2026, month=5, day=1, tz="Asia/Bangkok"),
     schedule=CronTriggerTimetable(cron="0 16 * * MON-FRI", timezone="Asia/Bangkok"),
     catchup=True,

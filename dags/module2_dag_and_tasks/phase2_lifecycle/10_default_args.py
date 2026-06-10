@@ -43,7 +43,7 @@ default_args = {
 # Example 2: Using default_args in a DAG
 # ──────────────────────────────────────────────
 with DAG(
-    dag_id="default_args_demo",
+    dag_id="10_default_args",
     start_date=pendulum.datetime(2026, 1, 1, tz="Asia/Bangkok"),
     schedule="@daily",
     default_args={"retries": 2},

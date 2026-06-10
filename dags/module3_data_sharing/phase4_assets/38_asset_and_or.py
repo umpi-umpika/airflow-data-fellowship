@@ -9,7 +9,7 @@ urgent_fix_data = Asset("s3://bucket/hotfix.csv")
 
 # ตัวอย่างที่ 1: ต้องรอทั้ง Sales และ Marketing มาครบ (AND)
 @dag(
-    dag_id='standard_report_dag',
+    dag_id='38_standard_report_dag',
     start_date=datetime(2026, 6, 6),
     schedule=[sales_data, marketing_data],
     catchup=False,

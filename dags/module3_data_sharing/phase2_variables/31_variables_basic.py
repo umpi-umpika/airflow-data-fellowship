@@ -5,7 +5,7 @@ import requests
 
 
 @dag(
-    dag_id='jsonplaceholder_variable_example',
+    dag_id='31_jsonplaceholder_variable_example',
     start_date=datetime(2026, 6, 6),
     schedule=None,
     catchup=False,

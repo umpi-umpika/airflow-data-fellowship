@@ -10,7 +10,7 @@ customer_table = Asset("file://db/customers")
 # DAG 1: คนสร้างข้อมูล (Producer)
 # ---------------------------------------------------------
 @dag(
-    dag_id='extract_customer_dag',
+    dag_id='36_extract_customer_dag',
     start_date=datetime(2026, 6, 6),
     schedule="@daily",
     catchup=False,

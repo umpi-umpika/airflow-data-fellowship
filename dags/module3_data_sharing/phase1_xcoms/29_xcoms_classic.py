@@ -3,7 +3,7 @@ from datetime import datetime
 
 
 @dag(
-    dag_id='taskflow_with_classic_xcom', 
+    dag_id='29_xcoms_classic', 
     start_date=datetime(2026, 6, 6), 
     schedule=None, 
     catchup=False

@@ -10,7 +10,7 @@ from datetime import datetime
 
 
 @dag(
-    dag_id="dag_b_target",  # ชื่อนี้ต้องตรงกับ trigger_dag_id ใน DAG A
+    dag_id="27_dag_b_target",  # ชื่อนี้ต้องตรงกับ trigger_dag_id ใน DAG A
     start_date=datetime(2026, 6, 6),
     schedule=None,           # ปกติ DAG ที่ถูก Trigger มักตั้ง schedule=None
     catchup=False,
