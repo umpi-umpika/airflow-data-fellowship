@@ -1,49 +1,33 @@
-"""
-Lab 2 — YouTube Trending Pipeline (STARTER)
-============================================
-โจทย์: สร้าง pipeline ดึง mock data วิดีโอ trending ของไทย
-       บันทึกลง SQLite วันละครั้ง
-       ต้อง backfill ย้อนหลัง 7 วันได้โดยไม่มีข้อมูลซ้ำ
-
-ภารกิจ:
-  1. เติมโค้ดใน TODO ทุกจุด
-  2. รัน DAG แล้วดูผลใน Airflow UI
-  3. ทดสอบ backfill:
-       airflow dags backfill lab2_youtube_trending -s 2026-06-01 -e 2026-06-07
-  4. Query DB ตรวจสอบว่าแต่ละวันมีข้อมูลครบและไม่ซ้ำ:
-       SELECT trend_date, COUNT(*) as cnt FROM trending GROUP BY trend_date ORDER BY trend_date;
-  5. (Bonus) เพิ่ม task ที่ 4: พิมพ์ Top 3 วิดีโอของวันนั้น
-
-ใช้ macro: {{ ds }} = วันที่ในรูปแบบ YYYY-MM-DD
-"""
-
-from airflow.sdk import dag, task
+from airflow.decorators import dag, task
 from datetime import datetime, timedelta
-import sqlite3
 import random
-
-DB_PATH = "/tmp/youtube_trending.db"
+from airflow.providers.clickhousedb.hooks.clickhouse import ClickHouseHook
 
 default_args = {
     "owner": "data-team",
-    # TODO 1: เพิ่ม retries=2 และ retry_delay=timedelta(minutes=2)
+    # ✅ TODO 1: เพิ่ม retries=2 และ retry_delay=timedelta(minutes=2)
+    "retries": 2,
+    "retry_delay": timedelta(minutes=2),
 }
 
 
-def get_db():
-    conn = sqlite3.connect(DB_PATH)
-    conn.execute("""
-        CREATE TABLE IF NOT EXISTS trending (
-            video_id   TEXT,
-            title      TEXT,
-            channel    TEXT,
-            views      INTEGER,
-            likes      INTEGER,
-            trend_date TEXT
-        )
+def get_client():
+    ch_hook = ClickHouseHook(clickhouse_conn_id="clickhouse_conn")
+    client = ch_hook.get_client()
+    client.query("CREATE DATABASE IF NOT EXISTS labs")
+    client.query("""
+        CREATE TABLE IF NOT EXISTS labs.trending (
+            video_id   String,
+            title      String,
+            channel    String,
+            views      Int64,
+            likes      Int64,
+            trend_date String,
+            created_at DateTime DEFAULT now()
+        ) ENGINE = MergeTree()
+        ORDER BY video_id
     """)
-    conn.commit()
-    return conn
+    return client
 
 
 def mock_trending_api(date: str) -> list:
@@ -71,55 +55,82 @@ def mock_trending_api(date: str) -> list:
 @dag(
     dag_id="lab2_youtube_trending",
     default_args=default_args,
-    # TODO 2: กำหนด schedule="@daily"
-    # TODO 3: กำหนด start_date=days_ago(7)
-    # TODO 4: เปิด catchup=True เพื่อให้ backfill ได้
-    tags=["lab2", "backfill", "templating"],
-    doc_md=__doc__,
+    # ✅ TODO 2: กำหนด schedule="@daily"
+    schedule="@daily",
+    # ✅ TODO 3: กำหนด start_date ย้อนหลัง 7 วัน
+    start_date=datetime.now() - timedelta(days=7),
+    # ✅ TODO 4: เปิด catchup=True เพื่อให้ backfill ได้
+    catchup=True,
+    tags=["lab2", "backfill", "trending"],
 )
 def lab2_youtube_trending():
 
     @task
     def fetch(ds=None):
         """
-        TODO 5: เรียก mock_trending_api(ds) แล้ว return ผลลัพธ์
-        ds คือวันที่ในรูปแบบ "YYYY-MM-DD" ที่ Airflow inject ให้อัตโนมัติ
+        ✅ TODO 5: เรียก mock_trending_api(ds) แล้ว return ผลลัพธ์
         """
         print(f"[fetch] กำลังดึง trending วันที่ {ds}")
-        # TODO 5: เติมโค้ดที่นี่
-        pass
+        videos = mock_trending_api(ds)
+        print(f"[fetch] ดึงข้อมูลมาได้ทั้งหมด {len(videos)} วิดีโอ")
+        return videos
 
     @task
     def clean(videos: list) -> list:
         """
-        TODO 6: กรองวิดีโอที่มี views < 500,000 ออก
-        แล้ว return เฉพาะวิดีโอที่ views >= 500,000
+        ✅ TODO 6: กรองวิดีโอที่มี views < 500,000 ออก
         """
-        # TODO 6: เติมโค้ดที่นี่
-        pass
+        cleaned_videos = [v for v in videos if v["views"] >= 500000]
+        print(f"[clean] กรองวิดีโอที่มี views >= 500,000 เหลือ {len(cleaned_videos)} จาก {len(videos)}")
+        return cleaned_videos
 
     @task
     def load(videos: list, ds=None):
         """
-        TODO 7: บันทึกลง DB แบบ idempotent
-        คำใบ้: ใช้ DELETE trend_date = ds ก่อน แล้วค่อย INSERT
-        อย่าลืมใช้ transaction (try/except/rollback)
+        ✅ TODO 7: บันทึกลง DB แบบ idempotent (DELETE เก่าก่อนค่อย INSERT ใหม่)
         """
-        conn = get_db()
-        cur = conn.cursor()
-        try:
-            # TODO 7: เติมโค้ดที่นี่
-            pass
-        except Exception as e:
-            conn.rollback()
-            raise e
-        finally:
-            cur.close()
-            conn.close()
+        client = get_client()
+        # ลบข้อมูลเก่าของวันนั้นออกก่อน เพื่อให้รันซ้ำกี่ครั้งก็ได้ผลลัพธ์เท่าเดิม ไม่ซ้ำซ้อน
+        client.query(f"DELETE FROM labs.trending WHERE trend_date = '{ds}'")
+        
+        # เตรียมข้อมูลเพื่อ Insert
+        rows = [
+            (v["video_id"], v["title"], v["channel"], v["views"], v["likes"], v["trend_date"])
+            for v in videos
+        ]
+        
+        client.insert(
+            "labs.trending",
+            rows,
+            column_names=["video_id", "title", "channel", "views", "likes", "trend_date"]
+        )
+        print(f"[load] บันทึกข้อมูล {len(rows)} แถว ลงในกลุ่มวันที่ {ds} เรียบร้อยแล้ว")
 
-    # TODO 8: เชื่อม tasks ด้วย >> ให้ถูกลำดับ: fetch → clean → load
-    raw = fetch()
-    # TODO 8: เติมโค้ดที่นี่
+    @task
+    def bonus_top_3_videos(videos: list, ds=None):
+        """
+        ⭐️ (Bonus) พิมพ์ Top 3 วิดีโอที่มียอด views สูงสุดของวันนั้น
+        """
+        sorted_videos = sorted(videos, key=lambda x: x["views"], reverse=True)
+        top_3 = sorted_videos[:3]
+        
+        print(f"\n{'='*50}")
+        print(f"⭐️ TOP 3 TRENDING VIDEOS ON {ds} ⭐️")
+        print(f"{'='*50}")
+        for idx, v in enumerate(top_3, 1):
+            print(f"{idx}. {v['title']} | ช่อง: {v['channel']} | Views: {v['views']:,}")
+        print(f"{'='*50}\n")
+
+    # ✅ TODO 8: เชื่อมโยง Task Dependencies (fetch → clean → load และแตกสายไปทำ bonus)
+    raw_data = fetch()
+    cleaned_data = clean(raw_data)
+    
+    # รันโหลดลง DB และรันแสดงผลท็อป 3
+    load_to_db = load(cleaned_data)
+    show_top_3 = bonus_top_3_videos(cleaned_data)
+
+    raw_data >> cleaned_data >> [load_to_db, show_top_3]
 
 
+# เรียกใช้งาน DAG
 lab2_youtube_trending()

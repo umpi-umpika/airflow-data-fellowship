@@ -1,34 +1,25 @@
 """
-Lab 1 — Flash Sale Pipeline (BROKEN VERSION)
-=============================================
-โจทย์: มีแฟลชเซล 11.11 ลูกค้าสั่งซื้อพร้อมกัน
-       API ล่มกลางทาง ระบบ retry อัตโนมัติ
-       ถ้า pipeline ไม่ idempotent → ลูกค้าถูกตัดเงิน 2 ครั้ง!
-
-ภารกิจ:
-  1. รัน DAG นี้แล้วดูว่ามีออเดอร์ซ้ำใน DB กี่แถว
-  2. แก้ task `insert_orders` ให้ idempotent
-  3. Clear และ re-run 3 ครั้ง ตรวจสอบว่า count ไม่เปลี่ยน
-  4. (Bonus) จำลอง timeout ด้วย time.sleep() แล้ว retry
-
-hint: ดูที่ TODO ในโค้ด
+Lab 1 — Flash Sale Pipeline (Batch Script Version)
+==================================================
+This is a standalone batch script to run the flash sale pipeline.
 """
 
-from airflow.sdk import dag, task
+import argparse
+import random
 from datetime import datetime, timedelta
 import clickhouse_connect
-import random
-
-default_args = {
-    "owner": "data-team",
-    "retries": 3,
-    "retry_delay": timedelta(minutes=1),
-}
 
 
-def get_client():
-    # Inside Docker Compose, host is 'clickhouse' and password is 'clickhouse'
-    client = clickhouse_connect.get_client(host='clickhouse', port=8123, username='default', password='clickhouse')
+def get_client(host="localhost"):
+    try:
+        client = clickhouse_connect.get_client(host=host, port=8123, username='default', password='clickhouse')
+    except Exception as e:
+        if host == "localhost":
+            print(f"Failed to connect to localhost, trying 'clickhouse' host: {e}")
+            client = clickhouse_connect.get_client(host='clickhouse', port=8123, username='default', password='clickhouse')
+        else:
+            raise e
+    
     client.query("CREATE DATABASE IF NOT EXISTS labs")
     client.query("""
         CREATE TABLE IF NOT EXISTS labs.orders (
@@ -60,80 +51,80 @@ def generate_mock_orders(sale_date: str) -> list:
     return orders
 
 
-@dag(
-    dag_id="lab1_flash_sale",
-    default_args=default_args,
-    schedule="@daily",
-    start_date=datetime.now() - timedelta(days=3),
-    catchup=False,
-    tags=["lab1", "idempotency"],
-    doc_md=__doc__,
-)
-def lab1_flash_sale():
-
-    @task
-    def extract(ds=None):
-        """ดึง orders จาก mock API"""
-        print(f"[extract] กำลังดึง orders วันที่ {ds}")
-        orders = generate_mock_orders(ds)
-        print(f"[extract] ได้ {len(orders)} orders")
-        return orders
-
-    @task
-    def insert_orders(orders: list, ds=None):
-        """
-        TODO: แก้ function นี้ให้ idempotent!
-
-        ปัญหาปัจจุบัน: ใช้ INSERT ธรรมดา
-        → รันซ้ำ = ข้อมูลซ้ำทุกครั้ง
-
-        วิธีแก้ (เลือกอย่างใดอย่างหนึ่ง):
-          A) DELETE วันนั้นก่อน แล้วค่อย INSERT ใหม่ใน transaction เดียว
-          B) ใช้ INSERT OR REPLACE INTO ... (SQLite UPSERT)
-        """
-        client = get_client()
-
-        # ❌ BUG: INSERT ธรรมดา — รันซ้ำ = ข้อมูลซ้ำ!
-
-        rows = [
-            (order["order_id"], order["customer_id"], order["product"], order["amount"], order["sale_date"])
-            for order in orders
-        ]
-        
-        client.insert(
-            "labs.orders",
-            rows,
-            column_names=["order_id", "customer_id", "product", "amount", "sale_date"]
-        )
-
-        # ตรวจสอบ
-        result = client.query("SELECT count() FROM labs.orders WHERE sale_date = {ds:String}", parameters={"ds": ds})
-        total = result.result_rows[0][0]
-        print(f"[insert_orders] rows ใน DB วัน {ds}: {total}")
-        print(f"[insert_orders] คาดหวัง 10, จริง {total} {'✅' if total == 10 else '❌ มีซ้ำ!'}")
-
-    @task
-    def summarize(ds=None):
-        """สรุปยอดขายรายวัน"""
-        client = get_client()
-        result = client.query(
-            "SELECT count() as cnt, sum(amount) as rev FROM labs.orders WHERE sale_date = {ds:String}",
-            parameters={"ds": ds}
-        )
-        row = result.result_rows[0]
-        count = row[0]
-        revenue = row[1] if row[1] is not None else 0.0
-
-        print(f"\n{'='*40}")
-        print(f"Flash Sale Summary — {ds}")
-        print(f"  Orders  : {count}")
-        print(f"  Revenue : {revenue:,.2f} THB")
-        print(f"{'='*40}\n")
-        if count != 10:
-            raise ValueError(f"❌ พบ {count} orders แต่คาดหวัง 10 — มีข้อมูลซ้ำ!")
-
-    orders_data = extract()
-    insert_orders(orders_data) >> summarize()
+def extract(ds: str):
+    """ดึง orders จาก mock API"""
+    print(f"[extract] กำลังดึง orders วันที่ {ds}")
+    orders = generate_mock_orders(ds)
+    print(f"[extract] ได้ {len(orders)} orders")
+    return orders
 
 
-lab1_flash_sale()
+def insert_orders(client, orders: list, ds: str):
+
+    client.query(f"DELETE FROM labs.orders WHERE sale_date = '{ds}'")
+
+    rows = [
+        (order["order_id"], order["customer_id"], order["product"], order["amount"], order["sale_date"])
+        for order in orders
+    ]
+    
+    client.insert(
+        "labs.orders",
+        rows,
+        column_names=["order_id", "customer_id", "product", "amount", "sale_date"]
+    )
+
+    # ตรวจสอบ
+    result = client.query("SELECT count() FROM labs.orders WHERE sale_date = {ds:String}", parameters={"ds": ds})
+    total = result.result_rows[0][0]
+    print(f"[insert_orders] rows ใน DB วัน {ds}: {total}")
+    print(f"[insert_orders] คาดหวัง 10, จริง {total} {'✅' if total == 10 else '❌ มีซ้ำ!'}")
+
+
+def summarize(client, ds: str):
+    """สรุปยอดขายรายวัน"""
+    result = client.query(
+        "SELECT count() as cnt, sum(amount) as rev FROM labs.orders WHERE sale_date = {ds:String}",
+        parameters={"ds": ds}
+    )
+    row = result.result_rows[0]
+    count = row[0]
+    revenue = row[1] if row[1] is not None else 0.0
+
+    print(f"\n{'='*40}")
+    print(f"Flash Sale Summary — {ds}")
+    print(f"  Orders  : {count}")
+    print(f"  Revenue : {revenue:,.2f} THB")
+    print(f"{'='*40}\n")
+    if count != 10:
+        raise ValueError(f"❌ พบ {count} orders แต่คาดหวัง 10 — มีข้อมูลซ้ำ!")
+
+
+def main():
+    parser = argparse.ArgumentParser(description="Flash Sale Batch Pipeline")
+    parser.add_argument(
+        "--date", 
+        type=str, 
+        default=(datetime.now() - timedelta(days=1)).strftime("%Y-%m-%d"),
+        help="Date to process in YYYY-MM-DD format (default: yesterday)"
+    )
+    parser.add_argument(
+        "--host",
+        type=str,
+        default="localhost",
+        help="ClickHouse host (default: localhost)"
+    )
+    args = parser.parse_args()
+
+    print(f"Starting pipeline run for date: {args.date} using ClickHouse host: {args.host}")
+    
+    client = get_client(args.host)
+    
+    orders = extract(args.date)
+    insert_orders(client, orders, args.date)
+    summarize(client, args.date)
+    print("Pipeline run completed successfully!")
+
+
+if __name__ == "__main__":
+    main()
