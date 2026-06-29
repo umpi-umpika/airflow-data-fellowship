@@ -1,6 +1,7 @@
 """
 01_dag_declaration.py — 3 วิธีในการประกาศ DAG ใน Airflow
 ==========================================================
+📖 Slide Reference: หน้า 29 (Declaring a DAG)
 
 ไฟล์นี้สาธิต 3 รูปแบบการสร้าง DAG:
 1. Context Manager  — ใช้ `with DAG() as dag:` (แบบที่นิยมที่สุด)

@@ -1,5 +1,6 @@
 """
 === POC 07: Connections & Hooks ===
+📖 Slide Reference: หน้า 39 (Connections & Hooks)
 
 แนวคิดสำคัญ:
 

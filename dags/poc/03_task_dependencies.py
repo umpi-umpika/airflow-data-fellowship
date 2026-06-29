@@ -1,6 +1,7 @@
 """
 03_task_dependencies.py — การกำหนด Task Dependencies ใน Airflow
 ================================================================
+📖 Slide Reference: หน้า 31 (Task Dependencies)
 
 ไฟล์นี้สาธิตวิธีกำหนดลำดับการทำงานของ task (dependencies):
 1. >> (bitshift right)    — task_a >> task_b  หมายถึง "a ทำก่อน b"

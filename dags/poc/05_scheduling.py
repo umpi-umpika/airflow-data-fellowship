@@ -1,6 +1,7 @@
 """
 05_scheduling.py — 3 วิธี Scheduling ใน Airflow
 =================================================
+📖 Slide Reference: หน้า 33-37 (Running DAGs, Cron, Timedelta, Timetable)
 
 ไฟล์นี้สาธิต 3 วิธีในการกำหนด schedule ให้ DAG:
 1. Cron Expression     — schedule="30 7 * * *" (รันทุกวันตอน 07:30)
