@@ -1,6 +1,6 @@
 """
 === POC 10: Callbacks (Event Handlers) ===
-📖 Slide Reference: หน้า 28 (Callbacks — Event Handlers)
+📖 Slide Reference: หน้า 29 (Callbacks — Event Handlers)
 
 แนวคิดสำคัญ: Callback คืออะไร?
 

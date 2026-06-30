@@ -1,6 +1,6 @@
 """
 === POC 08: Variables & Jinja Templating ===
-📖 Slide Reference: หน้า 40-46 (Variables, Templating, Context Variables)
+📖 Slide Reference: หน้า 39-42 (Variables, Templating, Context, Metadata)
 
 แนวคิดสำคัญ:
 

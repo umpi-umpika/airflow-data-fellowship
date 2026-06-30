@@ -1,7 +1,7 @@
 """
 04_default_args.py — default_args และการ Override ระดับ Task
 =============================================================
-📖 Slide Reference: หน้า 32 (Default Arguments)
+📖 Slide Reference: หน้า 33 (Default Arguments)
 
 ไฟล์นี้สาธิตการใช้ `default_args` ใน DAG:
 - default_args คือ dictionary ที่กำหนดค่าเริ่มต้นให้ทุก task ใน DAG

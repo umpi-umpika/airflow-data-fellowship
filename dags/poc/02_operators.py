@@ -1,7 +1,7 @@
 """
 02_operators.py — Operator พื้นฐานใน Airflow
 ==============================================
-📖 Slide Reference: หน้า 30 (Operators)
+📖 Slide Reference: หน้า 31 (Operators)
 
 ไฟล์นี้สาธิต Operator 3 แบบที่ใช้บ่อยที่สุด:
 1. BashOperator   — รัน shell command (เช่น bash script, CLI tools)

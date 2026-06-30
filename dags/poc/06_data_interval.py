@@ -1,6 +1,6 @@
 """
 === POC 06: Data Interval & Logical Date ===
-📖 Slide Reference: หน้า 38 (Data Interval & Logical Date), หน้า 44-45 (Jinja Filters)
+📖 Slide Reference: หน้า 37 (Data Interval & Logical Date), หน้า 40-41 (Jinja Filters & Context)
 
 แนวคิดสำคัญ: Data Interval คืออะไร?
 - Airflow ไม่ได้ "run ตอนนี้แล้วดึงข้อมูลตอนนี้"

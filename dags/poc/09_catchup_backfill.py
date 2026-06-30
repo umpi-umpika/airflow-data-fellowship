@@ -1,6 +1,6 @@
 """
 === POC 09: Catchup & Backfill ===
-📖 Slide Reference: หน้า 10-16 (Idempotency & Designing for Failure), หน้า 22 (Catchup & Backfill)
+📖 Slide Reference: หน้า 10-16 (Idempotency & Designing for Failure), หน้า 24 (Catchup & Backfill)
 
 ============================================================
 🔑 CATCHUP & BACKFILL — แนวคิดสำคัญ
