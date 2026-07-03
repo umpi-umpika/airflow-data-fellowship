@@ -15,7 +15,7 @@ from airflow.providers.clickhousedb.hooks.clickhouse import ClickHouseHook
 from airflow.sdk import dag, task, Asset
 from greenery.schemas.addresses import pyarrow_schema, clickhouse_ddl
 
-MINIO_CONN_ID = "minio_default"
+MINIO_CONN_ID = "minio_conn"
 MINIO_BUCKET = "greenery"
 
 CLICKHOUSE_CONN_ID = "clickhouse_conn"

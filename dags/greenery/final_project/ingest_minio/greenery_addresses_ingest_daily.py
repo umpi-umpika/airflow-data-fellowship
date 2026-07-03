@@ -10,7 +10,7 @@ from airflow.sdk import dag, task, Asset
 
 addresses_raw_asset = Asset("s3://greenery/raw/addresses")
 
-MINIO_CONN_ID = "minio_default"
+MINIO_CONN_ID = "minio_conn"
 MINIO_BUCKET = "greenery"
 CSV_PATH = "/opt/airflow/docs/greenery/addresses.csv"
 

@@ -16,7 +16,7 @@ from greenery.schemas.users import pyarrow_schema, clickhouse_ddl
 
 users_asset = Asset("clickhouse://greenery/users")
 
-MINIO_CONN_ID = "minio_default"
+MINIO_CONN_ID = "minio_conn"
 MINIO_BUCKET = "greenery"
 
 CSV_PATH = "/opt/airflow/docs/greenery/users.csv"

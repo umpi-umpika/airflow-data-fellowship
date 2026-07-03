@@ -18,7 +18,7 @@
 
 3. ความสัมพันธ์:
    Connection (ข้อมูล) → Hook (interface) → Operator (action)
-   เช่น: minio_default → S3Hook → S3ToLocalFilesystem
+   เช่น: minio_conn → S3Hook → S3ToLocalFilesystem
 
 Scenario: ดึง connection info จาก Airflow connections ที่มีอยู่ในระบบ
 """
@@ -58,12 +58,12 @@ def poc_connections_hooks_demo():
 
         ⚠️ ต้องสร้าง connection ใน Airflow UI ก่อน ไม่งั้นจะ error
         """
-        # ลอง get connection "minio_default" ที่ควรมีอยู่ในระบบ
-        # (ตาม AGENTS.md: minio_default — S3-compatible conn to MinIO)
+        # ลอง get connection "minio_conn" ที่ควรมีอยู่ในระบบ
+        # (ตาม AGENTS.md: minio_conn — S3-compatible conn to MinIO)
         try:
-            conn = BaseHook.get_connection("minio_default")
+            conn = BaseHook.get_connection("minio_conn")
             print("=" * 60)
-            print("🔌 CONNECTION: minio_default")
+            print("🔌 CONNECTION: minio_conn")
             print("=" * 60)
             print(f"  Connection found: {conn.conn_id}")
             print(f"  Host: {conn.host}")
@@ -75,7 +75,7 @@ def poc_connections_hooks_demo():
             print(f"  Connection Type: {conn.conn_type}")
             print("=" * 60)
         except Exception as e:
-            print(f"⚠️ Connection 'minio_default' not found: {e}")
+            print(f"⚠️ Connection 'minio_conn' not found: {e}")
             print("Please create the connection in Airflow UI > Admin > Connections")
 
         # ลอง get connection "clickhouse_conn" ด้วย
@@ -114,7 +114,7 @@ def poc_connections_hooks_demo():
         # ตัวอย่างการใช้ Hook (concept demo)
         # ในงานจริงจะใช้แบบนี้:
         # from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-        # hook = S3Hook(aws_conn_id="minio_default")
+        # hook = S3Hook(aws_conn_id="minio_conn")
         # hook.load_file(filename="data.csv", key="raw/data.csv", bucket_name="my-bucket")
 
         print("=" * 60)
@@ -134,7 +134,7 @@ def poc_connections_hooks_demo():
         print("  - MySqlHook      → สำหรับ MySQL")
         print()
         print("📝 วิธีใช้ Hook ในงานจริง:")
-        print('  hook = S3Hook(aws_conn_id="minio_default")')
+        print('  hook = S3Hook(aws_conn_id="minio_conn")')
         print('  hook.load_file("data.csv", "raw/data.csv", "bucket")')
         print("  # Hook จะดึง credentials จาก connection ให้อัตโนมัติ!")
 
@@ -156,7 +156,7 @@ def poc_connections_hooks_demo():
         print()
         print("2. 🏷️ ตั้งชื่อ connection ให้สื่อความหมาย")
         print("   ❌ conn_1, my_conn")
-        print("   ✅ minio_default, clickhouse_conn, postgres_dwh")
+        print("   ✅ minio_conn, clickhouse_conn, postgres_dwh")
         print()
         print("3. 🧪 ใช้ test connection ก่อน deploy DAG")
         print("   Airflow UI > Admin > Connections > Test button")
@@ -169,7 +169,7 @@ def poc_connections_hooks_demo():
         print("   Hook จัดการ lifecycle ของ connection ให้")
         print()
         print("6. 🌍 ใช้ Environment Variables สำหรับ production")
-        print("   AIRFLOW_CONN_MINIO_DEFAULT='s3://...'")
+        print("   AIRFLOW_CONN_minio_conn='s3://...'")
 
     # ----------------------------------------------------------
     # Dependencies

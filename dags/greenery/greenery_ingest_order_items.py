@@ -16,7 +16,7 @@ from greenery.schemas.order_items import pyarrow_schema, clickhouse_ddl
 
 order_items_asset = Asset("clickhouse://greenery/order_items")
 
-MINIO_CONN_ID = "minio_default"
+MINIO_CONN_ID = "minio_conn"
 MINIO_BUCKET = "greenery"
 
 CSV_PATH = "/opt/airflow/docs/greenery/order_items.csv"
