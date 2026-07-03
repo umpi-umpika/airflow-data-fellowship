@@ -25,7 +25,7 @@ Scenario: pipeline ดึง log ตาม data interval
 
 import pendulum
 from airflow.sdk import dag, task, get_current_context
-from airflow.operators.bash import BashOperator
+from airflow.providers.standard.operators.bash import BashOperator
 
 
 # ============================================================

@@ -162,7 +162,7 @@ def poc_callbacks_alerting():
         print("⚙️ Processing data...")
 
         # Random fail 50% ของเวลา
-        if random.random() < 0.5:
+        if random.random() < 0.9:
             print("   💥 Something went wrong!")
             raise ValueError("Simulated failure! Random error occurred during processing.")
 

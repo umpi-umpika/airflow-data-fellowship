@@ -118,66 +118,41 @@ def ecommerce_order_processing():
         print(f"   Message: คำสั่งซื้อ {report['order_id']} ได้รับการอนุมัติแล้ว ✅")
 
     # ====================================================================
-    # วิธีที่ 1: >> (Bitshift Right) — วิธีที่นิยมที่สุด ✅
+    # การรันและเชื่อมโยง Task (TaskFlow API Style)
     # ====================================================================
-    # อ่านจากซ้ายไปขวา: "extract ทำก่อน แล้วค่อย [payment, stock]"
-    #
-    # สำหรับ TaskFlow API (@task) การส่ง output เป็น argument
-    # จะสร้าง dependency อัตโนมัติ ไม่ต้องใช้ >> เพิ่ม
-    # แต่เราสามารถใช้ >> เพิ่มได้ถ้าต้องการ
-
     order_data = extract_order()
 
-    # Fan-out: extract → [validate_payment, validate_stock]
-    # เมื่อส่ง order_data เป็น parameter → dependency ถูกสร้างอัตโนมัติ
+    # Fan-out: รันคู่ขนานกัน
     payment = validate_payment(order_data)
     stock = validate_stock(order_data)
 
-    # Fan-in: [validate_payment, validate_stock] → generate_report
+    # Fan-in: รอให้ทั้งคู่เสร็จแล้วส่งผลลัพธ์ไปรวมกัน
     report = generate_report(payment, stock)
 
-    # ====================================================================
-    # วิธีที่ 2: set_downstream() — เหมือน >> แต่เป็น method call
-    # ====================================================================
-    # report.set_downstream(notification) เหมือนกับ report >> notification
-    # ข้อดี: อ่านชัดเจนกว่าสำหรับคนที่ไม่คุ้น operator overloading
-    #
-    # ตัวอย่าง (ใช้ได้ทั้งสองแบบ — เลือกแบบใดแบบหนึ่ง):
-    #   report >> notify_customer(report)           # แบบ >>
-    #   report.set_downstream(notify_customer(report))  # แบบ method
-
+    # รัน task แจ้งเตือน
     notification = notify_customer(report)
 
     # ====================================================================
-    # วิธีที่ 3: << (Bitshift Left / Reverse) — อ่านกลับด้าน
-    # ====================================================================
-    # task_b << task_a หมายถึง "b depends on a" หรือ "a ทำก่อน b"
-    # เหมือน task_a >> task_b แต่เขียนกลับด้าน
-    #
-    # ⚠️ ใช้ << ได้ แต่ไม่แนะนำเพราะอ่านสับสน
-    # ตัวอย่าง (ไม่ได้ใช้จริงในไฟล์นี้ เพราะ dependency ถูกสร้างจาก
-    #           function call chain แล้ว แต่แสดงให้เห็น syntax):
-    #
-    #   notification << report   # notification ขึ้นอยู่กับ report
-    #   เหมือนกับ: report >> notification
-    #
-    # สำหรับ TaskFlow API ที่ส่ง output เป็น argument
-    # dependency จะถูกสร้างจาก function call อยู่แล้ว
-    # การใช้ << ซ้ำจะ redundant แต่ไม่ error
-
-    # ====================================================================
-    # วิธีที่ 4: set_upstream() — เหมือน << แต่เป็น method call
-    # ====================================================================
-    # task_b.set_upstream(task_a) หมายถึง "b ขึ้นอยู่กับ a"
-    # เหมือน task_a >> task_b หรือ task_b << task_a
-    #
-    # ตัวอย่าง (ไม่ได้ใช้จริง เพราะ dependency สร้างแล้ว):
-    #   notification.set_upstream(report)  # notification ขึ้นอยู่กับ report
-
-    # ====================================================================
-    # สรุปวิธีกำหนด dependency ทั้ง 4 แบบ:
+    # รูปแบบการกำหนด Dependency ทั้งหมดใน Airflow (สำหรับศึกษาเพิ่มเติม)
     # ====================================================================
     #
+    # สำหรับ TaskFlow API (@task) แค่ส่ง output ไปเป็น parameter Airflow ก็สร้าง dependency ให้แล้ว
+    # แต่หากจำเป็นต้องระบุ หรือกรณีใช้ Classic Operator สามารถระบุได้ดังนี้:
+    #
+    # 1) >> (Bitshift Right) — นิยมที่สุด ✅
+    #    - code_a >> code_b (a ทำก่อน b)
+    #
+    # 2) << (Bitshift Left) — อ่านย้อนกลับ (ไม่แนะนำ ❌)
+    #    - code_b << code_a (b ขึ้นกับ a)
+    #
+    # 3) set_downstream() — เหมือน >> แต่เป็น method
+    #    - code_a.set_downstream(code_b)
+    #
+    # 4) set_upstream() — เหมือน << แต่เป็น method
+    #    - code_b.set_upstream(code_a)
+    #
+    # --------------------------------------------------------------------
+    # สรุปตารางเปรียบเทียบ:
     # | วิธี               | ตัวอย่าง                        | ความหมาย           |
     # |--------------------|---------------------------------|-------------------|
     # | >> (bitshift)      | task_a >> task_b                | a ทำก่อน b         |
@@ -185,9 +160,8 @@ def ecommerce_order_processing():
     # | set_downstream()   | task_a.set_downstream(task_b)   | a → b             |
     # | set_upstream()     | task_b.set_upstream(task_a)      | b ← a             |
     # | function call      | task_b(task_a())                | a → b (TaskFlow)  |
-    #
-    # 💡 แนะนำ: ใช้ >> เป็นหลัก เพราะอ่านง่ายและเป็นที่นิยมที่สุด
-    # 💡 TaskFlow API: ส่ง output เป็น parameter จะสร้าง dependency อัตโนมัติ
+    # --------------------------------------------------------------------
+
 
 
 # ⚠️ สำคัญ: ต้อง call function เพื่อ instantiate DAG

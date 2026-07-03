@@ -22,8 +22,8 @@ Scenario: System Health Check Pipeline
 import shutil
 
 from airflow.sdk import dag, task, DAG
-from airflow.operators.bash import BashOperator
-from airflow.operators.python import PythonOperator
+from airflow.providers.standard.operators.bash import BashOperator
+from airflow.providers.standard.operators.python import PythonOperator
 import pendulum
 
 
