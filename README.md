@@ -32,7 +32,7 @@ docker compose up -d
 
 ### 2. เปิด Airflow UI
 
-เข้า [http://localhost:8080](http://localhost:8080) (login: `admin` / `admin`)
+เข้า [http://localhost:8080](http://localhost:8080) (login: `airflow` / `airflow`)
 
 ### 3. ค้นหา DAG
 
